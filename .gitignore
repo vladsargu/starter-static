@@ -1,0 +1,15 @@
+# Misc.
+.sass-cache
+.DS_Store
+cache
+
+# Vagrant and Puppet
+.vagrant
+vagrant_nginx_postprocess
+site.pp
+.cache
+vagrant-custom.rb
+
+# Site
+node_modules/
+public/assets/
