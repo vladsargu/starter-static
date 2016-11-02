@@ -2,12 +2,23 @@
   "name": "vpmframe-static",
   "devDependencies": {
     "gulp": "*",
-    "gulp-compass": "*",
+    "bower": "*",
     "gulp-concat": "*",
+    "gulp-connect": "*",
+    "gulp-cssnano": "*",
     "gulp-imagemin": "*",
     "gulp-livereload": "*",
-    "gulp-minify-css": "*",
+    "gulp-plumber": "*",
+    "gulp-sass": "*",
+    "gulp-sass-glob": "*",
     "gulp-uglify": "*",
-    "gulp-util": "*"
+    "gulp-util": "*",
+    "autoprefixer": "*",
+    "main-bower-files": "*",
+    "node-sass-asset-functions": "0.*"
+  },
+  "scripts": {
+    "gulp": "gulp",
+    "bower": "bower"
   }
 }

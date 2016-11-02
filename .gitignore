@@ -1,15 +1,12 @@
-# Misc.
+# Compiled files and dependencies
+public/assets/
+vendor/
+node_modules/
+bower_components/
+
+# Hidden files, caches, and misc.
 .sass-cache
 .DS_Store
 cache
-
-# Vagrant and Puppet
-.vagrant
-vagrant_nginx_postprocess
-site.pp
 .cache
-vagrant-custom.rb
-
-# Site
-node_modules/
-public/assets/
+npm-debug.log
