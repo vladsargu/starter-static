@@ -1,22 +1,23 @@
 /**
  * Load Gulp and Gulp-adjacent dependencies
  */
-var gulp           = require('gulp'),
-    gutil          = require('gulp-util'),
-    concat         = require('gulp-concat'),
-    connect        = require('gulp-connect'),
-    cssnano        = require('gulp-cssnano'),
-    imagemin       = require('gulp-imagemin'),
-    mainBowerFiles = require('main-bower-files'),
-    sass           = require('gulp-sass'),
-    sassAssetFuncs = require('node-sass-asset-functions'),
-    sassglob       = require('gulp-sass-glob')
+var gulp           = require('gulp')
+var gutil          = require('gulp-util')
+var concat         = require('gulp-concat')
+var connect        = require('gulp-connect')
+var cssnano        = require('gulp-cssnano')
+var imagemin       = require('gulp-imagemin')
+var mainBowerFiles = require('main-bower-files')
+var sass           = require('gulp-sass')
+var sassAssetFuncs = require('node-sass-asset-functions')
+var sassglob       = require('gulp-sass-glob')
+var uglify         = require('gulp-uglify')
 
 /**
  * Define paths
  */
-var src  = 'app/assets/',
-    dest = 'public/assets/'
+var src  = 'app/assets/'
+var dest = 'public/assets/'
 
 var paths = {
   src: {
@@ -34,7 +35,7 @@ var paths = {
 }
 
 /**
- * CSS tasks
+ * Sass to CSS compilation, minification, and prefixing
  */
 gulp.task('css', function() {
   gulp.src(paths.src.sass + '/*.scss')
@@ -63,7 +64,7 @@ gulp.task('css', function() {
 })
 
 /**
- * Images
+ * Image minification
  */
 gulp.task('images', function () {
   gulp.src(paths.src.images)
@@ -73,6 +74,40 @@ gulp.task('images', function () {
     }))
     .pipe(gulp.dest(paths.dest.images))
     .pipe(connect.reload())
+})
+
+/**
+ * JavaScript compilation
+ */
+gulp.task('js', function () {
+  /**
+   * Default function for compiling JS
+   *
+   * @param source
+   * @param filename
+   */
+  function jsCompile(source, filename) {
+    return gulp.src(source)
+      .pipe(concat(filename))
+      .on('error', gutil.log)
+      .pipe(uglify())
+      .on('error', gutil.log)
+      .pipe(gulp.dest(paths.dest.js))
+      .pipe(connect.reload())
+  }
+
+  // libraries.js
+  jsCompile(mainBowerFiles({
+    paths: {
+      bowerDirectory: 'vendor/bower_components'
+    },
+    filter: /\.js$/i
+  }), 'libraries.js')
+
+  // script.js
+  jsCompile([
+    paths.src.js + '/script.js',
+  ], 'script.js')
 })
 
 /**
@@ -91,6 +126,7 @@ gulp.task('serve', function () {
 gulp.task('watcher', function () {
   gulp.watch(paths.src.sass + '/**/*', ['css'])
   gulp.watch(paths.src.images,         ['images'])
+  gulp.watch(paths.src.js,             ['js'])
 })
 
 /**
@@ -98,6 +134,7 @@ gulp.task('watcher', function () {
  */
 gulp.task('default', [
   'images',
+  'js',
   'css'
 ])
 
