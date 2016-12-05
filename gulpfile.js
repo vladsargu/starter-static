@@ -43,7 +43,9 @@ gulp.task('css', function() {
     .pipe(sass({
       functions: sassAssetFuncs({
         'images_path': paths.dest.images,
-        'http_images_path': '/assets/img/'
+        'http_images_path': '/assets/img/',
+        'fonts_path': paths.dest.fonts,
+        'http_fonts_path': '/assets/fonts/',
       }),
       includePaths: [
         './vendor/bower_components',
@@ -60,6 +62,15 @@ gulp.task('css', function() {
       }
     }))
     .pipe(gulp.dest(paths.dest.css))
+    .pipe(connect.reload())
+})
+
+/**
+ * Font placement
+ */
+gulp.task('fonts', function () {
+  gulp.src(paths.src.fonts)
+    .pipe(gulp.dest(paths.dest.fonts))
     .pipe(connect.reload())
 })
 
@@ -125,6 +136,7 @@ gulp.task('serve', function () {
  */
 gulp.task('watcher', function () {
   gulp.watch(paths.src.sass + '/**/*', ['css'])
+  gulp.watch(paths.src.fonts,          ['fonts'])
   gulp.watch(paths.src.images,         ['images'])
   gulp.watch(paths.src.js,             ['js'])
 })
