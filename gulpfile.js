@@ -25,7 +25,7 @@ var paths = {
     sass:   src + 'sass',
     fonts:  src + 'fonts/**/*',
     images: src + 'images/**/*',
-    js:     src + 'javascripts/**/*',
+    js:     src + 'javascripts',
   },
   dest: {
     css:    dest + 'css/',
@@ -178,7 +178,7 @@ gulp.task('watcher', function () {
   gulp.watch(paths.src.sass + '/**/*', ['css'])
   gulp.watch(paths.src.fonts,          ['fonts'])
   gulp.watch(paths.src.images,         ['images'])
-  gulp.watch(paths.src.js,             ['js'])
+  gulp.watch(paths.src.js + '/**/*',   ['js'])
 })
 
 /**
