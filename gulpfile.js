@@ -5,6 +5,7 @@ var gulp           = require('gulp')
 var gutil          = require('gulp-util')
 var concat         = require('gulp-concat')
 var connect        = require('gulp-connect')
+var connectRewrite = require('connect-modrewrite')
 var cssnano        = require('gulp-cssnano')
 var imagemin       = require('gulp-imagemin')
 var mainBowerFiles = require('main-bower-files')
@@ -12,6 +13,8 @@ var s3             = require('s3')
 var sass           = require('gulp-sass')
 var sassAssetFuncs = require('node-sass-asset-functions')
 var sassglob       = require('gulp-sass-glob')
+var twig           = require('gulp-twig')
+var twigMarkdown   = require('twig-markdown');
 var uglify         = require('gulp-uglify')
 
 /**
@@ -26,12 +29,14 @@ var paths = {
     fonts:  src + 'fonts/**/*',
     images: src + 'images/**/*',
     js:     src + 'javascripts',
+    views:  'app/views',
   },
   dest: {
     css:    dest + 'css/',
     fonts:  dest + 'fonts/',
     images: dest + 'img/',
     js:     dest + 'js/',
+    views:  'public/',
   }
 }
 
@@ -162,12 +167,39 @@ gulp.task('deploy', function () {
 })
 
 /**
+ * Twig to HTML compilation
+ */
+gulp.task('html', function() {
+  gulp.src([
+    paths.src.views + '/**/*.twig',
+    '!' + paths.src.views + '/**/_*.twig',
+    '!' + paths.src.views + '/layouts/**/*',
+  ])
+    .pipe(twig({
+      base: paths.src.views,
+      data: {},
+      extend: function (Twig) {
+        twigMarkdown(Twig)
+      }
+    }))
+    .pipe(gulp.dest(paths.dest.views))
+    .pipe(connect.reload())
+})
+
+/**
  * Serve requests
  */
 gulp.task('serve', function () {
   connect.server({
     root: 'public',
     livereload: true,
+    middleware: function () {
+      return [
+        connectRewrite([
+          '^.([^\\.]+)$ /$1.html [L]',
+        ])
+      ]
+    },
   })
 })
 
@@ -175,10 +207,11 @@ gulp.task('serve', function () {
  * Watch filesystem for changes
  */
 gulp.task('watcher', function () {
-  gulp.watch(paths.src.sass + '/**/*', ['css'])
-  gulp.watch(paths.src.fonts,          ['fonts'])
-  gulp.watch(paths.src.images,         ['images'])
-  gulp.watch(paths.src.js + '/**/*',   ['js'])
+  gulp.watch(paths.src.sass + '/**/*',  ['css'])
+  gulp.watch(paths.src.fonts,           ['fonts'])
+  gulp.watch(paths.src.images,          ['images'])
+  gulp.watch(paths.src.js + '/**/*',    ['js'])
+  gulp.watch(paths.src.views + '/**/*', ['html'])
 })
 
 /**
@@ -187,7 +220,8 @@ gulp.task('watcher', function () {
 gulp.task('default', [
   'images',
   'js',
-  'css'
+  'css',
+  'html'
 ])
 
 /**
