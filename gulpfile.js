@@ -8,6 +8,7 @@ var connect        = require('gulp-connect')
 var cssnano        = require('gulp-cssnano')
 var imagemin       = require('gulp-imagemin')
 var mainBowerFiles = require('main-bower-files')
+var s3             = require('s3')
 var sass           = require('gulp-sass')
 var sassAssetFuncs = require('node-sass-asset-functions')
 var sassglob       = require('gulp-sass-glob')
@@ -119,6 +120,45 @@ gulp.task('js', function () {
   jsCompile([
     paths.src.js + '/script.js',
   ], 'script.js')
+})
+
+/**
+ * Deploy to S3
+ */
+gulp.task('deploy', function () {
+  // Load private credentials
+  var creds = require('./s3.json')
+
+  // Build our client
+  var client = s3.createClient({
+    s3Options: {
+      accessKeyId: creds.access_key,
+      secretAccessKey: creds.secret_key,
+    }
+  })
+
+  // Sync the folder
+  var uploader = client.uploadDir({
+    localDir: "public",
+    deleteRemoved: true,
+    s3Params: {
+      Bucket: creds.bucket_name,
+      Prefix: creds.base_path + '/',
+      ACL: "public-read",
+    },
+  })
+
+  uploader.on('error', function (err) {
+    gutil.log("unable to sync: ", err.stack);
+  })
+
+  uploader.on('progress', function () {
+    gutil.log("progress", uploader.progressAmount, uploader.progressTotal);
+  })
+
+  uploader.on('end', function () {
+    gutil.log("done uploading");
+  })
 })
 
 /**
