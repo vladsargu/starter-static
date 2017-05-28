@@ -6,9 +6,9 @@ Simple starter for static site projects.
 
 1. `git clone [repo]`
 2. Rename project in bower/package.json
-3. `npm install`
-4. `npm run bower install`
-5. `npm run gulp watch`
+3. `yarn install`
+4. `yarn run bower install`
+5. `yarn run gulp watch`
 
 ## License & Conduct
 
