@@ -1,5 +1,5 @@
 # Compiled files and dependencies
-public/assets/
+public/
 vendor/
 node_modules/
 bower_components/
