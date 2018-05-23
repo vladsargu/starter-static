@@ -221,7 +221,8 @@ gulp.task('default', [
   'images',
   'js',
   'css',
-  'html'
+  'html',
+  'fonts'
 ])
 
 /**
